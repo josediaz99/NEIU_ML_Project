@@ -20,10 +20,13 @@ Idle Mean	Idle Std	Idle Max	Idle Min	XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 attack  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ------------------------------------------------------------------------------------------------------------------------
-UNDERSTANDING THE DATA                                                      (-)for basic data
-                                                                            (-!)important
-                                                                            (-?)questions
-                                                                            (---)potential solutions
+UNDERSTANDING THE DATA                                                      -   for basic data
+                                                                            -!  important
+                                                                            -?  questions
+                                                                            --- potential solutions
+                                                                            {}  grouped data
+                                                                            source = the sender
+                                                                            destination = the server
 - what is does the data try to explain
 - what information is necessary for our system to better understand if we are under a dos attack
 - what can be removed or refactored and why (consider potential data leakage)
@@ -35,6 +38,7 @@ Init_Win_bytes_forward	Init_Win_bytes_backward
 - there refer to the initial tcp window size advertised by each side of the connection (client -> server -> client)
 - they indicate how much data each side is willing to recieve before requiring acknoledgement 
 -! large or unusual values can sometimes correlate with abnormal traffic or poor connections
+-? this is not explicitly a sign of a dos attack and we should consider what the data looks like to see if we should remove this feature
 
 act_data_pkt_fwd
 - represents how many packets sent in the forward direction actually contains meaningful data
@@ -50,18 +54,85 @@ Subflow Bwd Bytes   Subflow Fwd Bytes
 
 PACKETS
 
-Total Fwd Packets	Total Backward Packets	Total Length of Fwd Packets	Total Length of Bwd Packets	
-Fwd Packet Length Max	Fwd Packet Length Min	Fwd Packet Length Mean	Fwd Packet Length Std	
-Bwd Packet Length Max	Bwd Packet Length Min	Bwd Packet Length Mean	Bwd Packet Length Std	
-Fwd Packets/s	Bwd Packets/s	
-Min Packet Length	Max Packet Length	Packet Length Mean	Packet Length Std	Packet Length Variance	
-Average Packet Size
-Subflow Fwd Packets
-Subflow Bwd Packets
+fwd bwd data
+{
+Total Fwd Packets
+- the total number of packets sent from the source to the destination during the connection
+- it reflects how active the sende was
 
-- what is a packet (how does it relate to bytes/flow)
-- what information is necessary for our system to better understand if we are under a dos attack
-- what can be removed and why (consider potential data leakage)
+Total Backward Packets
+- the total number of packets sent from the destination back to the source
+- this shows how much response traffic there was
+
+Total Length of Fwd Packets	
+- the combined size (in bytes) of all packets sent forward
+- it tells you how much actual data was trasmitted in that direction
+
+Total Length of Bwd Packets	
+- the combined size of all packets sent backward
+- the total data that  was returned
+
+--- this group of data can also be refactored to determine if there is a large difference between fwd and bwd
+-! we will be expecting a disproportionate low response to sent data if there is a dos attack
+}
+
+packet measurements
+{
+Fwd Packet Length Max	Fwd Packet Length Min	Fwd Packet Length Mean	Fwd Packet Length Std	
+Bwd Packet Length Max	Bwd Packet Length Min	Bwd Packet Length Mean	Bwd Packet Length Std
+
+-! attack traffic will be small and repetitive, unusually large, or have low variation
+-! low variation can be a sign of bots sending identical packets for a flooding attack
+}
+
+traffic speed
+{
+Fwd Packets/s	Bwd Packets/s
+
+- the speed the source and the destination data are being sent
+-! signs of a dos attack
+    - forward rate is extremely high
+    - bwd rate is near 0
+}
+
+packet length measurements
+{
+- describe the joined source and destination packet measurement data (smallest,largest,mean,std packet in the session)
+Min Packet Length	Max Packet Length	Packet Length Mean	Packet Length Std	
+
+Packet Length Variance	
+-! you can think of it as squared standard deviation
+-! low variance can be seen as bots sending identical data
+-! high variance can be seen as malformed and mixed size flood packets
+}
+
+
+Average Packet Size
+- average of all packet sizes 
+- large average apcket size can be seen as mmore data heavy transactions
+- small average size can is more common in dos attacks due to repetitive traffic
+
+packat subflow{
+Subflow Fwd Packets
+- represents the total number of packets sent forward from source to desitnation within the subflow
+- helps indicate how much the sender is pusing data or requests 
+
+Subflow Bwd Packets
+- this is thhe totla number of packets from destination to source is in the subflow
+- indicates the servers response traffic
+
+- all provide a snapshot for the volume of packets in each direction 
+- shows how alanced the communcation is
+-! whether the communication looks normal(back n forth) or attack like(one sided)
+
+| Pattern                                     | Meaning                                                        |
+| ------------------------------------------- | -------------------------------------------------------------- |
+| High forward packets + low backward packets | Client flooding server (potential DoS)                         |
+| Balanced forward/backward                   | Typical conversation (normal web traffic, file transfer, etc.) |
+| Small packet sizes repeated rapidly         | Possible bot or automated attack traffic                       |
+| Mixed sizes with structured responses       | Likely normal behavior                                         |
+
+}
 ------------------------------------------------------------------------------------------------------------
 
 MISC
@@ -75,9 +146,44 @@ FIN Flag Count	SYN Flag Count	RST Flag Count	PSH Flag Count	ACK Flag Count	URG F
 Down/Up Ratio	
 Fwd Header Length.1	
 Fwd PSH Flags	Fwd Header Length	Bwd Header Length	
-Flow IAT Mean	Flow IAT Std	Flow IAT Max	Flow IAT Min	
-Fwd IAT Total	Fwd IAT Mean	Fwd IAT Std	Fwd IAT Max	Fwd IAT Min	
-Bwd IAT Total	Bwd IAT Mean	Bwd IAT Std	Bwd IAT Max	Bwd IAT Min	
+traffic timing measurements
+{
+- all represent the timing metrics and can represent how smooth or chaotic the data is being communicated
+
+Flow IAT Mean
+- average time between packets
+Flow IAT Std
+- how the timing varies between packets	
+Flow IAT Max	
+- longest pause between any two packets
+Flow IAT Min	
+- shortest gap between two packets
+
+- flow metrics combine both directions meaning how smooth or chaotic the communcation is 
+
+Fwd IAT Total	
+- total time between forward packets
+Fwd IAT Mean	
+- average gap between forward packets
+Fwd IAT Std
+- variation in those timing gaps
+Fwd IAT Max	
+- max pause on forward packets
+Fwd IAT Min	
+- smallest time between forward packets
+
+- fwd IAT represents the sources sending patters
+
+Bwd IAT Total
+- total time the destination has between packets
+Bwd IAT Mean	
+- mean time it is paused between packets
+Bwd IAT Std	
+- variation of timing 
+Bwd IAT Max	
+Bwd IAT Min	
+
+}
 Destination Port	
 Flow Duration	
 attack
