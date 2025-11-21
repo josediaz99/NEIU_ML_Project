@@ -50,6 +50,7 @@ Subflow Bwd Bytes   Subflow Fwd Bytes
 - this gives a sens of traffic inbalance 
 -! dos attacks often heav heavy outbound packet volume wit hvery little legitimate response traffic
 --- by replacing both subflow collumn with the difference we can have a better understanding on disporportionate samples
+
 -------------------------------------------------------------------------------------------------------------------
 
 PACKETS
@@ -74,6 +75,7 @@ Total Length of Bwd Packets
 
 --- this group of data can also be refactored to determine if there is a large difference between fwd and bwd
 -! we will be expecting a disproportionate low response to sent data if there is a dos attack
+
 }
 
 packet measurements
@@ -181,15 +183,36 @@ Bwd IAT Mean
 Bwd IAT Std	
 - variation of timing 
 Bwd IAT Max	
+- max time between responses from the destination
 Bwd IAT Min	
-
+- min time between packets
 }
-Destination Port	
-Flow Duration	
+
+Destination Port
+
+Flow Duration
+- total time that the connection . flow existed
+
 attack
+- our labels
 
 --------------------------------------------------------------------------------------------------------------
 TRAINING DATA
 
+attack - y labels
+            -------------------------------------------------------------------------------------
+            -------------------------------------------------------------------------------------
+
 --------------------------------------------------------------------------------------------------------------
-TO REMOVE
+TO REMOVE & REFACTOR
+
+-----------------------------------------------------
+high abs correlation
+
+- bwd package length min packet length min -.55
+- fwd packet length min -.41
+- min packet length - .59
+- destination port - .4
+
+
+-----------------------------------------------------
