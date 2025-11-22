@@ -22,12 +22,12 @@ attack  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ------------------------------------------------------------------------------------------------------------------------
 UNDERSTANDING THE DATA                                                      -   for basic data
                                                                             -!  important
-                                                                            -?  questions
+                                                                            -?  question
                                                                             --- potential solutions
                                                                             {}  grouped data
                                                                             source = the sender
                                                                             destination = the server
-- what is does the data try to explain
+- what is / does the data try to explain
 - what information is necessary for our system to better understand if we are under a dos attack
 - what can be removed or refactored and why (consider potential data leakage)
 ------------------------------------------------------------------------------------------------------------------------
