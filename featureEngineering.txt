@@ -1,0 +1,45 @@
+based on the features we expect to be important and the features that were actually found to be important
+using this information we can gain some insight on what is important to track
+
+initially our destination port was the most important feature but there is no reason for
+a category to hold so much weight especially when we know this feature should hold no weight
+
+when using this we get different important features with different weights
+
+feature 2 total backward packets
+- this is an improtant feature to track in order to understand if we are sending a protportionate amount of information back to the users
+- what is especially important to track is the ratio between forward and back packets in order to determine if the messeges being sent need to be sent back
+-! to solve this lacking data we can use feature 2 and 3 and create a new column to represent if the disporportionate data flow
+feature 3 total length fwd packets 
+- tells us how much actuall data was sent forward 
+- the feature is important to track how much data is being sent forward because we can expect the data to be very large when being flooded
+
+new feature 
+ Total Fwd Packets / total backward packets -> fwd bwd packet ratio 
+
+feature 5 fwd packet length 
+- because we know how some attacks work we expect when we recieve an abnormaly large  packet we can
+find attacks
+- we can leave this as is
+
+feature 11 bwd packet length mean & 12 bwd packet length std
+- these features tell us about how we send data back to the users / potential attacker
+- we can expect this information to have low std and mean length 
+- we can remove one of these features to classify attacks without suffering from a lack of data
+
+feature 13 flow IAT mean
+- this feature represents the average amount of time we spend between packets
+
+feature 27 fwd header length
+- unsure how this data can determine if we have an attacker
+
+feature 31 min packet length 
+- min packet length lacks the conext on who this is being sent from
+- we expect the destination port to send back small to no info due to the attacks overwhelming the system
+instead of ths we need to use bwd and fwd data to determine if this is unusual
+
+feature 45 init win bytes backward
+because this feature sometimes is correlated with poor connection i will remove this feature to prevent false possitives from a connection error
+
+feature 46  act data pck frd
+- this feature is important to track because it represents how much actual meaningful information is being sent forward to the destination port

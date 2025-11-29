@@ -144,7 +144,7 @@ min_seg_size_forward
 Active Mean	Active Std	Active Max	Active Min	
 Idle Mean	Idle Std	Idle Max	Idle Min	
 Avg Fwd Segment Size	Avg Bwd Segment Size
-FIN Flag Count	SYN Flag Count	RST Flag Count	PSH Flag Count	ACK Flag Count	URG Flag Count	ECE Flag Count
+
 Down/Up Ratio	
 Fwd Header Length.1	
 Fwd PSH Flags	Fwd Header Length	Bwd Header Length	
@@ -216,3 +216,45 @@ high abs correlation
 
 
 -----------------------------------------------------
+
+result of important features from xgboost model 
+(after removing the destination port)
+
+2 Total Backward Packets
+- the total number of packets sent from the destination back to the source
+- this shows how much response traffic there was
+
+3 Total Length of Fwd Packets
+- the combined size (in bytes) of all packets sent forward
+- it tells you how much actual data was trasmitted in that direction
+
+5 Fwd Packet Length Max
+11 Bwd Packet Length Mean
+12 Bwd Packet Length Std
+-! attack traffic will be small and repetitive, unusually large, or have low variation
+-! low variation can be a sign of bots sending identical packets for a flooding attack
+
+13 Flow IAT Mean
+Bwd IAT Mean	
+- mean time it is paused between packets
+
+27 Fwd Header Length
+- unsure
+
+31 Min Packet Length
+Packet Length Variance	
+-! you can think of it as squared standard deviation
+-! low variance can be seen as bots sending identical data
+-! high variance can be seen as malformed and mixed size flood packets
+
+45 Init_Win_bytes_backward
+- there refer to the initial tcp window size advertised by each side of the connection (client -> server -> client)
+- they indicate how much data each side is willing to recieve before requiring acknoledgement 
+-! large or unusual values can sometimes correlate with abnormal traffic or poor connections
+-? this is not explicitly a sign of a dos attack and we should consider what the data looks like to see if we should remove this feature
+
+46 act_data_pkt_fwd
+- represents how many packets sent in the forward direction actually contains meaningful data
+- represents data from users without the noise
+-? if act data represents the data without the noise what kind of data is being sent when a dos attack is happening? 
+
